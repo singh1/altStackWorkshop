@@ -57,3 +57,57 @@ var modal = new Vue({
 });
 
 // ADD CODE HERE TO CREATE A VUE INSTANCE
+
+var eventsPage = new Vue({
+
+  // We want to target the div with an id of 'events'
+  el: '#events',
+
+  // Here we can register any values or collections that hold data
+  // for the application
+  data: {
+    event: { user: '', name: '', description: '', date: '' },
+    events: []
+  },
+
+  // Anything within the mounted function will run when the application loads
+  mounted: function() {
+    // call fetchEvents here!
+    this.fetchEvents();
+
+  },
+
+  // Methods we want to use in our application are registered here
+  methods: {
+    // add fetchEvents, addEvent, and deleteEvent
+    fetchEvents: function() {
+      let events = '';
+      let arr = [];
+      $.get("https://hidden-retreat-66994.herokuapp.com/AllEvents", (data) => {
+        arr = JSON.parse(data);
+        this.events =  arr;
+      });
+    },
+    addEvent: function() {
+      if(this.event.name) {
+        this.event.user = user;
+        this.events.push(this.event);
+        $.post("https://hidden-retreat-66994.herokuapp.com/PutEvent", {
+            name: this.event.name,
+            user: this.event.user, // ADD USER HERE
+            description: this.event.description, // ADD DESCRIPTION HERE
+            date: this.event.date,// ADD DATE HERE
+        }).done( function(data) {
+          window.location.reload();
+        });
+
+        this.event = { name: '', user: '', description: '', date: '' };
+      }
+    },
+    deleteEvent: function(index) {
+    if(confirm("Are you sure you want to delete this event?")) {
+      this.events.splice(index, 1);
+    }
+  },
+  }
+});
